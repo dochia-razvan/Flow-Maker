@@ -10,16 +10,16 @@
 
 using namespace std;
 
-const string FLOWS_CSV_FILE = "flows.csv"; //Define a CSV file name for storing flows
+const string FLOWS_CSV_FILE = "flows.csv";
 
 bool isValidFileName(const string &fileName){
-    string invalidChars = "\\/:*?\"<>|"; //List of characters not allowed in file names
-    for (char ch : fileName){ //Check if the fileName contains any invalid characters
+    string invalidChars = "\\/:*?\"<>|";
+    for (char ch : fileName){
         if (invalidChars.find(ch) != string::npos){
             return false;
         }
     }
-    if (fileName.empty() || fileName.find_first_not_of(" \t") == string::npos) // heck if the fileName is empty or contains only whitespace
+    if (fileName.empty() || fileName.find_first_not_of(" \t") == string::npos)
     {
         return false;
     }
@@ -41,7 +41,7 @@ class FlowStep{ //Base class for all flow steps
         virtual string getType() const = 0;
         virtual string getDescription() const = 0;
         virtual FlowStep *clone() const = 0;
-        virtual void reset() {} // Reset method if the user creates a new flow after the first one
+        virtual void reset() {}
         virtual ~FlowStep() {}
 };
 
@@ -52,7 +52,7 @@ class TitleStep : public FlowStep{
         bool complete = false;
     public:
 
-        TitleStep(const string &title = "Default Title for TitleStep", const string &subtitle = "Default Subtitle for TitleStep") : title(title), subtitle(subtitle) {} //Constructor
+        TitleStep(const string &title = "Default Title for TitleStep", const string &subtitle = "Default Subtitle for TitleStep") : title(title), subtitle(subtitle) {}
 
         void reset() override{
             complete = false;
@@ -65,10 +65,10 @@ class TitleStep : public FlowStep{
             cout << "Subtitle: " << subtitle << endl;
         }
 
-        FlowStep *clone() const override{ // Clone method
+        FlowStep *clone() const override{
             try{
-                return new TitleStep(*this); // Attempt to create a new TitleStep and return it as a FlowStep*
-            }catch (const bad_alloc &e){ // Handle memory allocation failure
+                return new TitleStep(*this);
+            }catch (const bad_alloc &e){
                 cerr << "Memory allocation error: " << e.what() << endl;
                 return nullptr;
             }
@@ -183,7 +183,7 @@ class NumberInputStep : public FlowStep{
         void setUserInput(double input) {userInput = input;}
 };
 
-template <typename T> //Template CalculusStep
+template <typename T>
 class CalculusStep : public FlowStep{
     private:
         ArithmeticOperation operation;
@@ -364,9 +364,9 @@ class TextFileInputStep : public FlowStep{
                     size_t pos = fileName.find_last_of(".");
                     if (pos == string::npos || fileName.substr(pos) != ".txt")
                     {
-                        fileName += ".txt"; //Adds .txt at the end of the filename if the user didn't enter it
+                        fileName += ".txt";
                     }
-                    break; // Valid input, exit the loop
+                    break;
                 }
             }
 
@@ -374,7 +374,6 @@ class TextFileInputStep : public FlowStep{
 
             ifstream inputFile(fileName);
             if (inputFile.is_open()){
-                // Read the file content and set the flag to indicate successful import
                 fileImported = true;
                 string line;
                 try{
@@ -383,7 +382,7 @@ class TextFileInputStep : public FlowStep{
                     }
                 }catch (const exception &e){
                     cout << "Error reading the file: " << e.what() << endl;
-                    fileImported = false; // Set the flag to indicate an error
+                    fileImported = false;
                 }
 
                 inputFile.close();
@@ -444,7 +443,7 @@ class CSVFileInputStep : public FlowStep{
                     if (pos == string::npos || fileName.substr(pos) != ".csv"){
                         fileName += ".csv";
                     }
-                    break; // Valid input, exit the loop
+                    break;
                 }
             }
 
@@ -476,7 +475,7 @@ class CSVFileInputStep : public FlowStep{
                 cout << "CSV file imported successfully." << endl;
             }catch (const ifstream::failure &e){
                 cerr << "Error opening or reading the file: " << e.what() << endl;
-                fileImported = false; // Set the flag to indicate an error
+                fileImported = false; 
             }
         }
 
@@ -491,8 +490,8 @@ class CSVFileInputStep : public FlowStep{
 
         string getType() const override {return "CSVFileInputStep";}
         string getDescription() const override {return ("Step to input a CSV file (.csv).\nDescription of the user that created the step: " + description);}
-        bool isFileImported() const {return fileImported;} // Check if the CSV file was successfully imported
-        const vector<vector<string>> &getCSVData() const {return csvData;} // Get the imported CSV data
+        bool isFileImported() const {return fileImported;}
+        const vector<vector<string>> &getCSVData() const {return csvData;}
         string getFileName() const {return fileName;}
 };
 
@@ -531,7 +530,6 @@ class OutputStep : public FlowStep{
         void setTitle(const string &newTitle) {title = newTitle;}
         void setDescription(const string &newDescription) {description = newDescription;}
 
-        // Method to check if there is a file with the same name as the output file. If there is, append a suffix to the filename.
         void handleFilenameConflict(){
             size_t pos = filename.find_last_of(".");
             if (pos == string::npos || filename.substr(pos) != ".txt"){
@@ -544,7 +542,6 @@ class OutputStep : public FlowStep{
                 string newFilename = to_string(suffix) + "_" + filename;
                 ifstream newFile(newFilename);
                 if (!newFile.is_open()){
-                    // If the new filename doesn't exist, use it
                     filename = newFilename;
                     break;
                 }
@@ -559,19 +556,16 @@ class OutputStep : public FlowStep{
                 cerr << e.what() << endl;
                 return;
             }
-            // Create and write to the output file
             try{
                 ofstream outputFile(filename);
                 if (!outputFile.is_open()){
                     throw runtime_error("Error: Unable to open the output file for writing.");
                 }
 
-                // Write title and description to the file
                 outputFile << "Title of the output file: " << title << endl;
                 outputFile << "Description of the output file: " << description << endl;
                 outputFile << "\n\n";
 
-                // Write selected information from previous steps
                 for (const string &data : outputData){
                     outputFile << data << endl;
                 }
@@ -608,7 +602,7 @@ class EndStep : public FlowStep{
         }
 };
 
-class Flow{ // Flow class representing a collection of steps
+class Flow{
     private:
         string name;
         vector<FlowStep *> steps;
@@ -616,13 +610,13 @@ class Flow{ // Flow class representing a collection of steps
     public:
         Flow(const string &name) : name(name) {}
 
-        ~Flow(){ // Destructor
+        ~Flow(){
             for (FlowStep *step : steps){
                 delete step;
             }
         }
 
-        void addStep(FlowStep *step){ // Add a step to the flow
+        void addStep(FlowStep *step){
             try{
                 steps.push_back(step);
             }catch (const bad_alloc &e){
@@ -630,7 +624,7 @@ class Flow{ // Flow class representing a collection of steps
             }
         }
 
-        void displayAvailableSteps() const{ // Display available steps and descriptions
+        void displayAvailableSteps() const{
             cout << "Available Steps:" << endl;
             cout << "1. TitleStep: Step with a title and subtitle." << endl;
             cout << "2. TextStep: Step with a title and text." << endl;
@@ -644,7 +638,7 @@ class Flow{ // Flow class representing a collection of steps
             cout << "0. EndStep: Step which adds automatically after finishing the flow." << endl;
         }
 
-        void displayFlowSteps() const{ // Display flow steps with numbers
+        void displayFlowSteps() const{
             cout << "\tFlow Steps:" << endl;
             for (size_t i = 0; i < steps.size(); ++i){
                 cout << "\t";
@@ -652,7 +646,7 @@ class Flow{ // Flow class representing a collection of steps
             }
         }
 
-        void run(){ // Execute all steps in the flow
+        void run(){
             for (FlowStep *step : steps){
                 step->execute();
             }
@@ -662,20 +656,18 @@ class Flow{ // Flow class representing a collection of steps
         const vector<FlowStep *> &getSteps() const {return steps;}
 };
 
-void saveFlowToCSV(const Flow &flow){ // Function to save a flow to a CSV file
+void saveFlowToCSV(const Flow &flow){
     try{
         ofstream csvFile(FLOWS_CSV_FILE, ios::app);
         if (!csvFile.is_open()){
             throw runtime_error("Unable to open the CSV file for writing.");
         }
 
-        // Get the current timestamp
         time_t currentTime = time(nullptr);
         struct tm *timeInfo = localtime(&currentTime);
         char timestamp[20];
         strftime(timestamp, sizeof(timestamp), "%Y-%m-%d %H:%M:%S", timeInfo);
 
-        // Write flow information to the CSV file
         csvFile << flow.getName() << "," << timestamp << ",";
         const vector<FlowStep *> &steps = flow.getSteps();
         for (const FlowStep *step : steps){
@@ -688,7 +680,7 @@ void saveFlowToCSV(const Flow &flow){ // Function to save a flow to a CSV file
     }
 }
 
-void displayFlowInfoFromCSV(){// Function to read and display flow information from the CSV file
+void displayFlowInfoFromCSV(){
     try{
         ifstream csvFile(FLOWS_CSV_FILE);
         if (!csvFile.is_open()){
@@ -700,13 +692,11 @@ void displayFlowInfoFromCSV(){// Function to read and display flow information f
             stringstream ss(line);
             string flowName, timestamp, stepType;
 
-            // Read flow name and timestamp from CSV
             getline(ss, flowName, ',');
             getline(ss, timestamp, ',');
             cout << "Flow Name: " << flowName << endl;
             cout << "Timestamp: " << timestamp << endl;
 
-            // Read and display steps from CSV data
             cout << "Steps:" << endl;
             while (getline(ss, stepType, ',')){
                 cout << "- " << stepType << endl;
@@ -719,7 +709,7 @@ void displayFlowInfoFromCSV(){// Function to read and display flow information f
     }
 }
 
-vector<string> readExistingFlowNames(){ // Function to read existing flow names from the CSV file
+vector<string> readExistingFlowNames(){
     vector<string> existingFlowNames;
     try{
         ifstream csvFile(FLOWS_CSV_FILE);
@@ -741,7 +731,7 @@ vector<string> readExistingFlowNames(){ // Function to read existing flow names 
     return existingFlowNames;
 }
 
-Flow loadFlowFromCSV(const string &flowName){ // Function to load a Flow from the CSV file based on the flow name
+Flow loadFlowFromCSV(const string &flowName){
     Flow loadedFlow(flowName);
     ifstream csvFile(FLOWS_CSV_FILE);
 
@@ -751,13 +741,10 @@ Flow loadFlowFromCSV(const string &flowName){ // Function to load a Flow from th
             stringstream ss(line);
             string csvFlowName, timestamp, stepType;
 
-            // Read flow name and timestamp from CSV
             getline(ss, csvFlowName, ',');
             getline(ss, timestamp, ',');
 
-            // Check if the loaded flow name matches the desired flow name
             if (csvFlowName == flowName){
-                // Read and add steps to the loaded flow
                 while (getline(ss, stepType, ',')){
                     try{
                         if (stepType == "TitleStep"){
@@ -791,7 +778,6 @@ Flow loadFlowFromCSV(const string &flowName){ // Function to load a Flow from th
                             loadedFlow.addStep(new EndStep());
                         }
                         else{
-                            // Unknown step types here
                             cerr << "Warning: Unknown step type '" << stepType << "' encountered and skipped." << endl;
                         }
                     }catch (const exception &e){
@@ -811,9 +797,9 @@ Flow loadFlowFromCSV(const string &flowName){ // Function to load a Flow from th
     return loadedFlow;
 }
 
-void deleteFlowFromCSV(const string &flowNameToDelete){ // Function to delete a flow from the CSV file based on the flow name
+void deleteFlowFromCSV(const string &flowNameToDelete){ 
     ifstream inputFile(FLOWS_CSV_FILE);
-    ofstream outputFile("temp.csv"); // Create a temporary file to write non-deleted flows
+    ofstream outputFile("temp.csv"); 
 
     if (inputFile.is_open() && outputFile.is_open()){
         string line;
@@ -824,18 +810,15 @@ void deleteFlowFromCSV(const string &flowNameToDelete){ // Function to delete a 
             getline(ss, flowName, ',');
 
             if (flowName == flowNameToDelete){
-                // Skip the line if it matches the flow to delete
                 continue;
             }
 
-            // If the flow name doesn't match, write it to the temporary file
             outputFile << line << endl;
         }
 
         inputFile.close();
         outputFile.close();
 
-        // Replace the original CSV file with the temporary file
         if (remove(FLOWS_CSV_FILE.c_str()) != 0){
             cerr << "Error: Unable to delete the original CSV file." << endl;
             return;
@@ -899,7 +882,6 @@ class FlowExecutor{
 
                     else if (currentStep->getType() == "TextInputStep")
                     {
-                        // Declare a variable to store user input
                         cout << i + 1 << ". " << currentStep->getType() << ": " << currentStep->getDescription() << endl;
                         cout << "Do you want to complete this step? (Y/N): ";
                         char completeStep;
@@ -928,7 +910,6 @@ class FlowExecutor{
                                         titleStep->setSubtitle(input);
                                     }
                                 }
-                                // If it's TextStep, prompt for title and text
                                 else if (currentStep->getType() == "TextStep")
                                 {
                                     TextStep *textStep = dynamic_cast<TextStep *>(currentStep);
@@ -1005,7 +986,6 @@ class FlowExecutor{
                                         cout << "Calculus Step " << numberCalculus + 1 << ": ";
 
                                         if (operationSymbol == 'm' || operationSymbol == 'M'){
-                                            // Check if it's a minimum or maximum operation
                                             string operationName = (operationSymbol == 'm') ? "min" : "max";
                                             cout << operationName << "(";
                                         }
@@ -1289,7 +1269,6 @@ class FlowExecutor{
 
                             OutputStep *outputStep = dynamic_cast<OutputStep *>(currentStep);
                             if (outputStep){
-                                // Collect information from previous steps
                                 outputData.clear();
                                 for (size_t m = 0; m < i; ++m){
                                     FlowStep *previousStep = steps[m];
@@ -1350,7 +1329,6 @@ class FlowExecutor{
                                                 string calculusOutput = "Calculus Result " + to_string(numberOutputCalculusStep + 1) + ": ";
 
                                                 if (operationSymbol == 'm' || operationSymbol == 'M'){
-                                                    // Check if it's a minimum or maximum operation
                                                     string operationName = (operationSymbol == 'm') ? "min" : "max";
                                                     calculusOutput += operationName + "(";
                                                 }
@@ -1413,7 +1391,7 @@ class FlowExecutor{
                                                     for (size_t col = 0; col < csvData[row].size(); ++col){
                                                         rowContent += csvData[row][col] + ", ";
                                                     }
-                                                    outputData.push_back(rowContent); // Add each row as a separate entry in outputData
+                                                    outputData.push_back(rowContent);
                                                 }
                                             }
                                             numberOutputCsvFileStep++;
@@ -1725,7 +1703,7 @@ int main(){
                         getline(cin, flowToDelete);
 
                         if (flowToDelete == "0"){
-                            break; // Exit to the main menu
+                            break;
                         }
 
                         bool flowExists = false;
@@ -1740,7 +1718,7 @@ int main(){
                         if (flowExists){
                             deleteFlowFromCSV(flowToDelete);
                             cout << "Flow '" << flowToDelete << "' deleted successfully!" << endl;
-                            break; // Exit the loop after deleting the flow
+                            break;
                         }
                         else{
                             cerr << "Error: Flow not found. Please enter a valid flow name or enter 0 to exit." << endl;
