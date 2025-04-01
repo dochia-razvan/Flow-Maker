@@ -35,7 +35,7 @@ enum class ArithmeticOperation {
     Maximum
 };
 
-class FlowStep{ //Base class for all flow steps
+class FlowStep{
     public:
         virtual void execute() = 0;
         virtual string getType() const = 0;
