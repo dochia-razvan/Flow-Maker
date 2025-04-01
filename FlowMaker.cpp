@@ -307,7 +307,6 @@ class CalculusStep : public FlowStep{
                 return nullptr;
             }
         }
-
         string getType() const override {return "CalculusStep";}
         string getDescription() const override {return "Step to perform arithmetic operations. (+, -, *, /, m (min), M (max))";}
         void setOperationSymbol(char symbol) {operationSymbol = symbol;}
