@@ -19,6 +19,4 @@ Concepts used:
   -> Exception Handling – C++ exceptions are used to manage errors
   
   -> File Handling (CSV Storage) – Workflows are saved and retrieved from a CSV file
-  
-A project for the Faculty of Automatic Control and Computers, University Politehnica of Bucharest.
 
