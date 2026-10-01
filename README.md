@@ -20,7 +20,5 @@ Concepts used:
   
   -> File Handling (CSV Storage) – Workflows are saved and retrieved from a CSV file
   
-  -> Algorithms & Iterators – Used for searching, sorting, and managing workflow steps
-
 A project for the Faculty of Automatic Control and Computers, University Politehnica of Bucharest.
 
