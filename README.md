@@ -8,15 +8,15 @@ You can create custom workflows with predefined step types, save and load workfl
 
 Concepts used:
 
-  -> Object-Oriented Programming (OOP) – Implemented using classes and objects
+  -> Object-Oriented Programming (OOP) - Implemented using classes and objects
   
-  -> Inheritance & Polymorphism – Different step types inherit from a base FlowStep class
+  -> Inheritance & Polymorphism - Different step types inherit from a base FlowStep class
   
-  -> Encapsulation – Data and methods are grouped within relevant classes
+  -> Encapsulation - Data and methods are grouped within relevant classes
   
-  -> Templates – Used in CalculusStep for arithmetic operations with different data types
+  -> Templates - Used in CalculusStep for arithmetic operations with different data types
   
-  -> Exception Handling – C++ exceptions are used to manage errors
+  -> Exception Handling - C++ exceptions are used to manage errors
   
-  -> File Handling (CSV Storage) – Workflows are saved and retrieved from a CSV file
+  -> File Handling (CSV Storage) - Workflows are saved and retrieved from a CSV file
 
